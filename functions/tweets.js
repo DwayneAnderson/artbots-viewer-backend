@@ -6,6 +6,18 @@ const twitter = new TwitterClient.TwitterClient({
   accessTokenSecret: process.env.TWITTER_API_ACCESS_TOKEN_SECRET
 })
 
+const doResponse = (statusCode, body) => {
+  return {
+    statusCode,
+    headers:  {
+      "Access-Control-Allow-Origin": "*",
+      "Access-Control-Allow-Headers": "Content-Type",
+      "Access-Control-Allow-Methods": "GET, POST, OPTION"
+    },
+    body: JSON.stringify(body)
+  }
+}
+
 exports.handler = async event => {
   const listId = event.queryStringParameters.listId || '976556889981906945'
   let twitterError = false
@@ -24,10 +36,7 @@ exports.handler = async event => {
     const errorMessage = errorData.code.toString() === '112'
       ? 'Twitter API: Invalid Twitter List ID'
       : 'Twitter API Error'
-    return {
-      statusCode: twitterError.statusCode,
-      body: JSON.stringify({ error: errorMessage })
-    }
+    return doResponse(twitterError.statusCode, { error: errorMessage })
   }
 
   twitterRequest.forEach((tweet, i) => {
@@ -65,8 +74,5 @@ exports.handler = async event => {
     }
   })
 
-  return {
-    statusCode: 200,
-    body: JSON.stringify(tweets)
-  }
+  return doResponse(200, tweets)
 }
