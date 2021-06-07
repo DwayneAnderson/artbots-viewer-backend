@@ -5,6 +5,7 @@ const twitter = new TwitterClient.TwitterClient({
   accessToken: process.env.TWITTER_API_ACCESS_TOKEN,
   accessTokenSecret: process.env.TWITTER_API_ACCESS_TOKEN_SECRET
 })
+const mockTweets = require('./../mocks/tweets')
 
 const doResponse = (statusCode, body) => {
   return {
@@ -20,6 +21,11 @@ const doResponse = (statusCode, body) => {
 
 exports.handler = async event => {
   const listId = event.queryStringParameters.listId || '976556889981906945'
+
+  if (listId === 'all') {
+    return doResponse(200, mockTweets)
+  }
+
   let twitterError = false
   const tweets = []
 
@@ -56,7 +62,6 @@ exports.handler = async event => {
         }
 
         tweets.push({
-          original: tweet,
           id,
           text,
           source,
