@@ -22,10 +22,6 @@ const doResponse = (statusCode, body) => {
 exports.handler = async event => {
   const listId = event.queryStringParameters.listId || '976556889981906945'
 
-  if (listId === 'all') {
-    return doResponse(200, mockTweets)
-  }
-
   let twitterError = false
   const tweets = []
 
